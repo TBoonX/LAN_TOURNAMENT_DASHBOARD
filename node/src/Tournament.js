@@ -17,11 +17,17 @@ class Tournament extends React.Component {
   }
 
   componentDidUpdate() {
-      if (!this.props.db || !this.props.tournament)
+      // if (!this.props.db || !this.props.tournament)
         return;
       
       // Interact With Database
       let that = this;
+      let games = this.db.collection('games');
+      that.games = games;
+      let points = this.db.collection('points');
+      
+      
+      
       that.props.db.table('games')
         .toArray()
         .then((games) => {

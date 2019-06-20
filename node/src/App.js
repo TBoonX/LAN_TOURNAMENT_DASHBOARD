@@ -2,13 +2,19 @@ import React from 'react';
 import { Navbar } from 'react-bootstrap';
 import './App.css';
 import Tournament from './Tournament';
-import Dexie from 'dexie';
+import zango from 'zangodb';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     
-    this.db = new Dexie("MyDatabase");
+    // Define Database Schema
+    this.db = new zango.Db("LAN", {
+        tournaments: ["name", 'id'],
+        participants: ["name, icon", 'id'],
+        games: ["name, icon", 'id'],
+        points: ["game, participant, tournament, value", 'id'],
+    });
     
     this.state = {
         tournament: {},
@@ -16,50 +22,43 @@ class App extends React.Component {
     };
     this.tournaments = [];
     
-    // Define Database Schema
-    this.db.version(1).stores({
-        tournaments: "++id, name",
-        participants: "++id, name, icon",
-        games: "++id, name, icon",
-        points: "++id, game, participant, tournament, value",
-    });
-    
     // Interact With Database
     let that = this;
-    this.db.table('tournaments')
-      .toArray()
-      .then((tournaments) => {
-          if (tournaments.length < 1) {
-              // Let's add some data to db:
-              let tournament1 = that.db.table('tournaments')
-                .add({name: 'COD2 Deathmatch'});
-              let participant1 = that.db.table('participants')
-                .add({name: 'Kurt', icon: 'http://ldap.aksw.org/pic/sn/Junghanns/gn/Kurt'});
-              let game1 = that.db.table('games')
-                .add({name: 'CoD 2', icon: 'https://tse4.mm.bing.net/th?id=OIP.N8Ti7Cb7RW8MqCxL4JULIAHaHa&pid=Api'});
-                
-            that.setState({
-                index: 0,
-            });
-          }
-      });
+    this.db.collection('tournaments').find().toArray((e, tournaments) => {
+        if (e)
+            console.error(e);
+        else if (!tournaments || tournaments.length < 1) {
+            // Let's add some data to db:
+            that.db.collection('tournaments').insert([{name: 'COD2 Deathmatch', id: 1}])
+                .then((e) => {
+                    return that.db.collection('participants').insert([{name: 'Kurt', icon: 'http://ldap.aksw.org/pic/sn/Junghanns/gn/Kurt', id: 1}]);
+                })
+                .then((e) => {
+                    return that.db.collection('games').insert([{name: 'CoD 2', icon: 'https://tse4.mm.bing.net/th?id=OIP.N8Ti7Cb7RW8MqCxL4JULIAHaHa&pid=Api', id: 1}])
+                        .then((e) => console.error(e))
+                        .catch((e) => console.error(e));
+                })
+                .then(() => {
+                    that.setState({
+                        index: 0,
+                    });
+                });
+        }
+    });
+    
   }
 
   componentDidMount() {
       // Interact With Database
       let that = this;
       // Let's add some data to db:
-      let point1 = this.db.table('points')
-          .add({game: 1, participant: 1, tournament: 1, value: 1});
-      let point2 = this.db.table('points')
-          .add({game: 1, participant: 1, tournament: 1, value: 2});
-          
-          
-      this.db.table('tournaments')
-        .toArray()
-        .then((tournaments) => {
-          that.setState({ tournament: tournaments[that.state.index], });
-        });
+      let points = this.db.collection('points');
+      points.insert([{game: 1, participant: 1, tournament: 1, value: 1, id: 1}, {game: 1, participant: 1, tournament: 1, value: 2, id: 2}])
+          .then(() => {
+              this.db.collection('tournaments').find().toArray((e, tournaments) => {
+                  that.setState({ tournament: tournaments[that.state.index], });
+              });
+          });
   }
 
   render() {
