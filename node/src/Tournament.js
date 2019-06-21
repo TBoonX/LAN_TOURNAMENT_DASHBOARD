@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Row, Col, Table } from 'react-bootstrap';
+import _ from 'lodash';
 import storage from './storage';
 
 // props:
@@ -29,7 +30,7 @@ class Tournament extends React.Component {
           rows.push((
               <tr key={participant.id}>
                 <td>{participant.name}</td>
-                <td>{points.filter(p => (p.participant === participant.id && p.tournament === this.props.tournament.id)).reduce((red, current) => {return red + current.value}, 0)}</td>
+                <td>{points.filter(p => (p.participant === participant.id && p.tournament === _.get(this.props.tournament, ['id'], 0))).reduce((red, current) => {return parseInt(red) + parseInt(current.value)}, 0)}</td>
               </tr>
           ));
       });
