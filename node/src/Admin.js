@@ -83,6 +83,7 @@ class Admin extends React.Component {
                 id: storage.getNewId('point'),
                 time: (new Date()).getTime(),
             });
+            this.point_value.value = '';
             this.setState(STATE_INIT);
         }
   }

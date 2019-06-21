@@ -1,36 +1,40 @@
 import React from 'react';
 import { Container, Row, Col, Table } from 'react-bootstrap';
+import storage from './storage';
 
 // props:
 //    tournament
-//    db
 class Tournament extends React.Component {
   constructor(props) {
     super(props);
     
     this.state = {
-        participants: [],
-        game: {},
-        points: [],
     };
-    this.games = [];
   }
 
-  componentDidUpdate() {
+  componentDidMount() {
+      let that = this;
+      storage.setObserver('point', (e) => {
+          console.log('Points changed');
+          that.forceUpdate();
+      });
   }
 
   render() {
       const tournament = this.props.tournament || {};
       let rows = [];
-      this.state.participants.forEach(participant => {
+      let participants = storage.getList('participant');
+      let points = storage.getList('point');
+      participants.forEach(participant => {
           rows.push((
-              <tr>
+              <tr key={participant.id}>
                 <td>{participant.name}</td>
-                <td>{this.state.points.filter(p => p.participant === participant.id).reduce((red, current) => {return red + current.value}, 0)}</td>
+                <td>{points.filter(p => (p.participant === participant.id && p.tournament === this.props.tournament.id)).reduce((red, current) => {return red + current.value}, 0)}</td>
               </tr>
           ));
       });
       
+    console.log('render', this.props);
     return (
         <Container>
             <Row className="justify-content-md-center">
@@ -41,7 +45,7 @@ class Tournament extends React.Component {
               <Table striped bordered hover size="sm">
                 <thead>
                   <tr>
-                    <th>Teilnehmerin</th>
+                    <th>Teilnehmende Person</th>
                     <th>Punkte</th>
                   </tr>
                 </thead>

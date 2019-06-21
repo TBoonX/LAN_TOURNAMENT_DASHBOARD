@@ -5,7 +5,18 @@ const TYPES_TO_KEY = {
     participant: 'LAN_Participants',
     point: 'LAN_Points',
 };
-
+const KEY_TO_TYPES = {
+    LAN_Tournaments: 'tournament',
+    LAN_Games: 'game',
+    LAN_Participants: 'participant',
+    LAN_Points: 'point',
+};
+let OBSERVER = {
+    tournament: () => {},
+    game: () => {},
+    participant: () => {},
+    point: () => {},
+};
 
 export default {
     getList: (type) => {
@@ -79,4 +90,14 @@ export default {
             return match.id;
         return 0;
     },
+    setObserver: (type, listener) => {
+        window.removeEventListener('storage', observe);
+        OBSERVER[type] = listener;
+        window.addEventListener('storage', observe);
+    },
+}
+
+function observe(e) {
+    console.log(e);
+    OBSERVER[KEY_TO_TYPES[e.key]]();
 }
