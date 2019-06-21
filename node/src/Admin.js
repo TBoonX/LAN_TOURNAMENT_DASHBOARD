@@ -6,6 +6,7 @@ const STATE_INIT = {
     tournament: 'Tournament',
     participant: 'Participant',
     game: 'Game',
+    match: '',
 };
 
 // props:
@@ -20,6 +21,7 @@ class Admin extends React.Component {
     this.saveGame = this.saveGame.bind(this);
     this.saveParticipant = this.saveParticipant.bind(this);
     this.savePoint = this.savePoint.bind(this);
+    this.saveMatch = this.saveMatch.bind(this);
     
     this.tournament_name = {};
     this.game_name = {};
@@ -87,6 +89,26 @@ class Admin extends React.Component {
             this.setState(STATE_INIT);
         }
   }
+  
+  saveMatch(e) {
+      console.log(this.state);
+      
+      const game = this.state.match_game,
+        modi = this.state.match_modi;
+      if (game && participant) {
+            storage.add('match', {
+                game: storage.getId('game', game),
+                modi: storage.getId('modi', modi),
+                id: storage.getNewId('point'),
+            });
+            this.match_value.value = '';
+            this.setState(STATE_INIT);
+        }
+  }
+  
+  getMatchLabel(t) {
+      return storage.getName('game', t.game) + ': ' + storage.getName('modi', t.modi);
+  }
 
   render() {
       const tournaments = storage.getList('tournament').map(t => {
@@ -109,6 +131,16 @@ class Admin extends React.Component {
               <Dropdown.Item key={t.id}>{storage.getName('participant', t.participant) + ': ' + t.value + ' in ' + storage.getName('tournament', t.tournament) + ' (' + storage.getName('game', t.game) + ')'}</Dropdown.Item>
           );
       });
+      const matches = storage.getList('match').map(t => {
+          return (
+              <Dropdown.Item key={t.id}>{this.getMatchLabel(t)}</Dropdown.Item>
+          );
+      });
+      const kds = storage.getList('kd').map(t => {
+          return (
+              <Dropdown.Item key={t.id}>{storage.getName('participant', t.participant) + ' scored ' + t.value + ' in ' + this.getMatchLabel(storage.get(t.match))}</Dropdown.Item>
+          );
+      });
       
       const tournaments_btn = storage.getList('tournament').map(t => {
           return (
@@ -123,6 +155,11 @@ class Admin extends React.Component {
       const games_btn = storage.getList('game').map(t => {
           return (
               <Dropdown.Item eventKey={t.name} key={t.id} onSelect={() => {this.setState({game: t.name});}} >{t.name}</Dropdown.Item>
+          );
+      });
+      const matches_btn = storage.getList('match').map(t => {
+          return (
+              <Dropdown.Item eventKey={t.id} key={t.id} onSelect={() => {this.setState({match: t.id});}} >{this.getMatchLabel(t)}</Dropdown.Item>
           );
       });
       
@@ -251,6 +288,73 @@ class Admin extends React.Component {
                             <Form.Control type="text" ref={input => this.point_value = input} />
                         </Form.Group>
                         <Button variant="primary" type="button" onClick={this.savePoint}>
+                            Speichern
+                        </Button>
+                    </Form>
+                    </Col>
+                </Row>
+                <br/>
+                <Row>
+                    <Col>
+                    <Alert key={1} variant={'secondary'}>
+                        Matches
+                    </Alert>
+                    <Dropdown>
+                        <Dropdown.Toggle variant="info" id="dropdown-basic">
+                            Vorhandene
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                            {matches}
+                        </Dropdown.Menu>
+                    </Dropdown>
+                    <Form>
+                        <ButtonToolbar>
+                            <DropdownButton variant="secondary" title={this.state.game} >
+                                {games_btn}
+                            </DropdownButton>
+                             - 
+                            <DropdownButton variant="secondary" title={this.state.participant} >
+                                {participants_btn}
+                            </DropdownButton>
+                        </ButtonToolbar>
+                        <Button variant="primary" type="button" onClick={this.saveMatch}>
+                            Speichern
+                        </Button>
+                    </Form>
+                    </Col>
+                </Row>
+                <br/>
+                <Row>
+                    <Col>
+                    <Alert key={1} variant={'secondary'}>
+                        K/D
+                    </Alert>
+                    <Dropdown>
+                        <Dropdown.Toggle variant="info" id="dropdown-basic">
+                            Vorhandene
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                            {kds}
+                        </Dropdown.Menu>
+                    </Dropdown>
+                    <Form>
+                        <ButtonToolbar>
+                            <DropdownButton variant="secondary" title={this.state.match} >
+                                {matches_btn}
+                            </DropdownButton>
+                             - 
+                            <DropdownButton variant="secondary" title={this.state.participant} >
+                                {participants_btn}
+                            </DropdownButton>
+                        </ButtonToolbar>
+                        
+                        <Form.Group controlId="kds_value">
+                            <Form.Label>Wert</Form.Label>
+                            <Form.Control type="text" ref={input => this.kds_value = input} />
+                        </Form.Group>
+                        <Button variant="primary" type="button" onClick={this.saveKD}>
                             Speichern
                         </Button>
                     </Form>

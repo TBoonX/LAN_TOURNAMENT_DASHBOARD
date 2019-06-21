@@ -4,18 +4,27 @@ const TYPES_TO_KEY = {
     game: 'LAN_Games',
     participant: 'LAN_Participants',
     point: 'LAN_Points',
+    modi: 'LAN_Modis',
+    match: 'LAN_Matches',
+    kd: 'LAN_KDs',
 };
 const KEY_TO_TYPES = {
     LAN_Tournaments: 'tournament',
     LAN_Games: 'game',
     LAN_Participants: 'participant',
     LAN_Points: 'point',
+    LAN_Modis: 'modi',
+    LAN_Matches: 'match',
+    LAN_KDs: 'kd',
 };
 let OBSERVER = {
     tournament: () => {},
     game: () => {},
     participant: () => {},
     point: () => {},
+    modi: () => {},
+    match: () => {},
+    kd: () => {},
 };
 
 export default {
