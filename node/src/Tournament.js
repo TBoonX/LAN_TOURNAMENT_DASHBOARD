@@ -17,37 +17,6 @@ class Tournament extends React.Component {
   }
 
   componentDidUpdate() {
-      if (!this.props.db || !this.props.tournament)
-        return;
-      
-      // Interact With Database
-      let that = this;
-      that.props.db.table('games')
-        .toArray()
-        .then((games) => {
-          that.games = games;
-          that.props.db.table('points')
-            .where('tournament').equals(that.props.tournament.id)
-            .toArray()
-            .then((points) => {
-                that.props.db.table('participants')
-                  .toArray()
-                  .then((participants) => {
-                    let filteredParticipants = participants.map(p => {
-                        if (points.find(point => {
-                            return point.participant === p.id;
-                        }))
-                            return p;
-                    });
-                    
-                    that.setState({
-                        participants: filteredParticipants,
-                        game: that.games.find(g => (g.id === points[0].game)),
-                        points: points,
-                    });
-                  });
-            });
-        });
   }
 
   render() {
