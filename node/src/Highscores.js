@@ -34,7 +34,7 @@ class Highscores extends React.Component {
               that.setState({
                   index: newIndex,
               }, wait);
-          }, 1000);
+          }, 5000);
       };
       wait();
   }
@@ -43,9 +43,21 @@ class Highscores extends React.Component {
     console.log('parent render', this.state);
     return (
         <div className="App">
-            <Navbar bg="light">
-                <Navbar.Brand>LAN Tournaments</Navbar.Brand>
+            <Navbar bg="dark" variant="dark">
+                <Navbar.Brand>
+                    <div style={{display: 'inline-block'}}>
+                        <img
+                            alt=""
+                            src="https://tse2.mm.bing.net/th?id=OIP.jm-E6bDf2rrbRu7xJSFYaAAAAA&pid=Api"
+                            width="80"
+                            height="80"
+                            className="d-inline-block align-top"
+                        />
+                        <h3 className="d-inline-block align-middle" >&nbsp;&nbsp;LAN Tournaments</h3>
+                    </div>
+                </Navbar.Brand>
             </Navbar>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Tournament tournament={this.state.tournaments[this.state.index]} />
         </div>
     );

@@ -33,15 +33,18 @@ class Tournament extends React.Component {
                 <td>{points.filter(p => (p.participant === participant.id && p.tournament === _.get(this.props.tournament, ['id'], 0))).reduce((red, current) => {return parseInt(red) + parseInt(current.value)}, 0)}</td>
               </tr>
           ));
-      });
+    });
+    let gameNames = _.uniq(points.filter((p => (p.tournament === _.get(this.props.tournament, ['id'], 0))))
+        .map(p => p.game))
+        .map(id => storage.getName('game', id));
       
     console.log('render', this.props);
     return (
         <Container>
             <Row className="justify-content-md-center">
-              <Col md="auto">{tournament.name}</Col>
+              <Col md="auto"><h4>{tournament.name} ({gameNames.join(', ')})</h4></Col>
             </Row>
-            <Row>
+            <Row className="justify-content-md-center">
               <Col md="auto">
               <Table striped bordered hover size="sm">
                 <thead>
