@@ -27,11 +27,23 @@ class Tournament extends React.Component {
       let rows = [];
       let participants = storage.getList('participant');
       let points = storage.getList('point');
+      const pointsPerParticipant = participants.reduce((a, c) => {
+          const points_ = points.filter(p => (p.participant === c.id && p.tournament === _.get(this.props.tournament, ['id'], 0)));
+          a[c.id] = parseInt(points_.reduce((red, current) => {return parseInt(red) + parseInt(current.value)}, 0));
+          return a;
+      }, {});
+      participants = participants.sort((p1, p2) => {
+          if (pointsPerParticipant[p1.id] > pointsPerParticipant[p2.id])
+            return -1;
+          if (pointsPerParticipant[p1.id] < pointsPerParticipant[p2.id])
+            return 1;
+          return 0;
+      });
       participants.forEach(participant => {
           rows.push((
               <tr key={participant.id}>
                 <td><Avatar name={participant.name} image={participant.image} /></td>
-                <td>{points.filter(p => (p.participant === participant.id && p.tournament === _.get(this.props.tournament, ['id'], 0))).reduce((red, current) => {return parseInt(red) + parseInt(current.value)}, 0)}</td>
+                <td>{pointsPerParticipant[participant.id]}</td>
               </tr>
           ));
     });
