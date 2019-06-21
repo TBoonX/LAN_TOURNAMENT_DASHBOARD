@@ -75,6 +75,21 @@ export default {
             return match.name;
         return 'Not Found';
     },
+    get: (type, id) => {
+        let data = window.localStorage.getItem(TYPES_TO_KEY[type]);
+        let json;
+        try {
+            json = JSON.parse(data);
+            if (!json)
+                json = [];
+        } catch (e) {
+            json = [];
+        }
+        let match = json.find(j => (j.id === id));
+        if (match)
+            return match;
+        return {};
+    },
     getId: (type, name) => {
         let data = window.localStorage.getItem(TYPES_TO_KEY[type]);
         let json;

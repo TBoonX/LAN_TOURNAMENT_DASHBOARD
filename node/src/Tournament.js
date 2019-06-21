@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Row, Col, Table } from 'react-bootstrap';
 import _ from 'lodash';
 import storage from './storage';
+import Avatar from './Avatar';
 
 // props:
 //    tournament
@@ -29,20 +30,28 @@ class Tournament extends React.Component {
       participants.forEach(participant => {
           rows.push((
               <tr key={participant.id}>
-                <td>{participant.name}</td>
+                <td><Avatar name={participant.name} image={participant.image} /></td>
                 <td>{points.filter(p => (p.participant === participant.id && p.tournament === _.get(this.props.tournament, ['id'], 0))).reduce((red, current) => {return parseInt(red) + parseInt(current.value)}, 0)}</td>
               </tr>
           ));
     });
-    let gameNames = _.uniq(points.filter((p => (p.tournament === _.get(this.props.tournament, ['id'], 0))))
+    let games = _.uniq(points.filter((p => (p.tournament === _.get(this.props.tournament, ['id'], 0))))
         .map(p => p.game))
-        .map(id => storage.getName('game', id));
+        .map(id => storage.get('game', id))
+        .map(game => (
+            <Avatar key={game.id} name={game.name} image={game.image} />
+        ));
       
     console.log('render', this.props);
     return (
         <Container>
             <Row className="justify-content-md-center">
-              <Col md="auto"><h4>{tournament.name} ({gameNames.join(', ')})</h4></Col>
+              <Col md="auto" className="justify-content-md-center">
+                <h4>
+                    {tournament.name}
+                </h4>
+                {games}
+              </Col>
             </Row>
             <Row className="justify-content-md-center">
               <Col md="auto">
